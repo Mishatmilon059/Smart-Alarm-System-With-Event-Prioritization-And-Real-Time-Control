@@ -29,6 +29,8 @@ We have included detailed documentation to help you understand the architecture 
 
 ## 🛠️ Technology Stack
 - **Hardware Controller:** ESP32 Microcontroller
+- **FPGA Board:** Nexys A7 100t (for state machine logic testing/validation)
+- **FPGA Software:** Xilinx Vivado
 - **Mobile Application:** Flutter (Dart)
 - **Web Application:** HTML/CSS/JS (`dashboard.html`)
 - **IoT Cloud Platform:** [Blynk](https://blynk.io/)
@@ -37,6 +39,9 @@ We have included detailed documentation to help you understand the architecture 
 ## 📁 Repository Structure
 ```text
 ├── esp32_smart_alarm.ino             # C++ code for the ESP32 microcontroller
+├── fpga/                             # Verilog logic and Constraints for Nexys A7 100t
+│   ├── smart_alarm_system.v          # Verilog state machine priority logic
+│   └── NexysA7-100T.xdc              # Pin constraints
 ├── smart_alarm/                      # Flutter mobile application source code
 ├── dashboard.html                    # Web-based live dashboard interface
 ├── remote_control_guide.md           # Architectural guide for remote IoT integrations
@@ -79,6 +84,13 @@ Set up your Blynk console with the following virtual datastreams corresponding t
 - `V1`: Flame Sensor (Integer 0/1)
 - `V2`: Door Sensor (Integer 0/1)
 - `V3`: Remote Reset Button (Integer 0/1)
+
+### 4. Hardware State Machine (FPGA)
+The underlying logic is also modeled internally using a state machine implemented on the Nexys A7 100t.
+1. Open Xilinx Vivado.
+2. Load the `fpga/smart_alarm_system.v` Verilog code.
+3. Apply the `fpga/NexysA7-100T.xdc` constraints file for Pin assignments.
+4. Synthesize, Generate Bitstream, and Program your Nexys A7 100t board.
 
 ---
 *Developed for the digital logic design / Digital electronics lab course.*
