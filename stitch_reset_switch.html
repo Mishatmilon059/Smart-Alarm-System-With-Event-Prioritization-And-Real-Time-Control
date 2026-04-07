@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Alarm System - Kinetic Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#005e1e",
+              "surface-container-low": "#131314",
+              "on-background": "#ffffff",
+              "tertiary-dim": "#bf5af2", // Neon Purple
+              "surface-dim": "#0e0e0f",
+              "primary-fixed": "#39ff14", // Neon Green
+              "secondary-container": "#006e24",
+              "on-secondary": "#005219",
+              "tertiary-container": "#6a0dad", // Darker Purple
+              "on-tertiary": "#ffffff",
+              "surface-container-lowest": "#000000",
+              "on-primary": "#004a5d",
+              "secondary-fixed": "#39ff14", // Neon Green
+              "error-dim": "#bf5af2",
+              "surface-variant": "#262627",
+              "on-secondary-fixed": "#003e11",
+              "on-primary-fixed": "#002a35",
+              "outline-variant": "#484849",
+              "on-error-container": "#e0b0ff",
+              "surface-container": "#1a191b",
+              "on-error": "#31004a",
+              "inverse-on-surface": "#565556",
+              "on-secondary-container": "#e5ffdf",
+              "on-surface": "#ffffff",
+              "primary": "#39ff14", // Neon Green
+              "on-tertiary-fixed-variant": "#4b0082",
+              "on-surface-variant": "#adaaab",
+              "secondary-fixed-dim": "#32cd32",
+              "tertiary-fixed-dim": "#d8b4fe",
+              "error-container": "#4b0082",
+              "primary-fixed-dim": "#32cd32",
+              "surface-container-high": "#201f21",
+              "secondary": "#39ff14", // Neon Green
+              "tertiary": "#bf5af2", // Neon Purple
+              "on-tertiary-container": "#ffffff",
+              "background": "#0e0e0f",
+              "on-tertiary-fixed": "#31004a",
+              "secondary-dim": "#32cd32",
+              "tertiary-fixed": "#e0b0ff",
+              "primary-container": "#39ff14",
+              "primary-dim": "#32cd32",
+              "outline": "#767576",
+              "inverse-surface": "#fcf8f9",
+              "surface-tint": "#39ff14",
+              "on-primary-fixed-variant": "#004a5c",
+              "inverse-primary": "#006880",
+              "error": "#bf5af2",
+              "surface-bright": "#2c2c2d",
+              "surface": "#0e0e0f",
+              "surface-container-highest": "#262627",
+              "on-primary-container": "#004050"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass {
+            background: rgba(38, 38, 39, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .glow-purple {
+            box-shadow: 0 0 25px rgba(191, 90, 242, 0.3);
+        }
+        .glow-green {
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        }
+        .tactile-button {
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.1),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes pulse-purple {
+            0% { box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(191, 90, 242, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(191, 90, 242, 0); }
+        }
+        .animate-pulse-purple {
+            animation: pulse-purple 2s infinite;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>@keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-[#0e0e0f] shadow-[0_0_20px_rgba(57,255,20,0.1)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<h1 class="text-lg font-bold tracking-widest text-primary font-headline uppercase">Smart Alarm System</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-high px-3 py-1 rounded-full">
+<div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#39ff14]"></div>
+<span class="text-[10px] font-bold uppercase tracking-tighter text-secondary">Online</span>
+</div>
+<span class="material-symbols-outlined text-slate-500" data-icon="wifi">wifi</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-5xl mx-auto">
+<!-- System Hero Status -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+<div>
+<h2 class="font-headline text-4xl md:text-6xl font-bold tracking-tight text-tertiary-dim mb-2 uppercase">
+                        Breach Detected
+                    </h2>
+<p class="text-on-surface-variant font-medium tracking-wide max-w-md">
+                        Emergency protocol initiated. Fire sensors triggered in Zone 04. Local authorities notified.
+                    </p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-1">Last Updated</span>
+<span class="font-headline text-2xl font-light">14:24:02 <span class="text-primary">UTC</span></span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Sensors -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- ALERT CARD: Fire Sensor -->
+<div class="md:col-span-8 group relative overflow-hidden glass rounded-xl p-8 border-l-4 animate-pulse-purple glow-purple" style="border-left-color: #FF0000; box-shadow: 0 0 25px rgba(255, 0, 0, 0.4); animation: pulse-red 2s infinite;">
+<div class="flex justify-between items-start mb-12">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest mb-1" style="color: #FF0000;">Zone 04 • Kitchen</p>
+<h3 class="font-headline text-3xl font-bold tracking-tight">Fire Sensor</h3>
+</div>
+<div class="w-12 h-12 rounded-full flex items-center justify-center text-on-tertiary" style="background-color: #FF0000; color: white;">
+<span class="material-symbols-outlined scale-125" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<div class="flex items-center gap-4 mb-4">
+<div class="px-4 py-2 rounded-md border border-tertiary/30" style="background-color: rgba(255, 0, 0, 0.2); border-color: rgba(255, 0, 0, 0.4);">
+<span class="font-bold text-tertiary uppercase tracking-tighter text-sm">FIRE DETECTED</span>
+</div>
+<span class="text-on-surface-variant text-xs font-medium">Critical Temperature: 184°F</span>
+</div>
+<div class="absolute bottom-0 right-0 w-48 h-48 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[12rem]" data-icon="local_fire_department" style="color: #FF0000;">local_fire_department</span>
+</div>
+</div>
+<!-- Sensor: Motion -->
+<div class="md:col-span-4 glass rounded-xl p-6 border-l-4 border-secondary-fixed/30 hover:border-secondary-fixed transition-all duration-500">
+<div class="flex justify-between items-start mb-10">
+<span class="material-symbols-outlined text-secondary-fixed/50" data-icon="sensors">sensors</span>
+<div class="w-2 h-2 rounded-full bg-secondary-fixed/30"></div>
+</div>
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-1">Main Hallway</p>
+<h3 class="font-headline text-xl font-bold mb-4">Motion Sensor</h3>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-on-surface-variant">Status:</span>
+<span class="text-xs font-bold uppercase text-on-surface">No Motion</span>
+</div>
+</div>
+<!-- Sensor: Door -->
+<div class="md:col-span-4 glass rounded-xl p-6 border-l-4 border-primary/30 hover:border-primary transition-all duration-500">
+<div class="flex justify-between items-start mb-10">
+<span class="material-symbols-outlined text-primary/50" data-icon="door_front">door_front</span>
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+</div>
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-1">Front Entrance</p>
+<h3 class="font-headline text-xl font-bold mb-4">Door Sensor</h3>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-on-surface-variant">Status:</span>
+<span class="text-xs font-bold uppercase text-primary">Closed</span>
+</div>
+</div>
+<!-- Activity Log Card -->
+<!-- 3D Physical Reset Switch Section -->
+<div class="md:col-span-8 flex flex-col items-center justify-center p-8 glass rounded-xl border border-white/5 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent pointer-events-none"></div>
+<h4 class="font-headline font-bold uppercase tracking-widest text-[10px] text-tertiary-dim mb-8">System Override Authorization</h4>
+<style>
+    .switch-3d-container {
+      perspective: 1000px;
+    }
+    .switch-3d-button {
+      width: 140px;
+      height: 60px;
+      background: linear-gradient(145deg, #1a1a1b, #0e0e0f);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      position: relative;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      box-shadow: 
+        0 10px 0 0 #000,
+        0 15px 30px rgba(0, 0, 0, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+    }
+    .switch-3d-button:active {
+      transform: translateY(8px);
+      box-shadow: 
+        0 2px 0 0 #000,
+        0 5px 15px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+    .switch-3d-button::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 2px solid rgba(191, 90, 242, 0.3);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    .switch-label {
+      text-shadow: 0 0 10px rgba(191, 90, 242, 0.5);
+    }
+    .switch-3d-button:active .switch-label {
+       color: #FF0000;
+       text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+  </style>
+<div class="switch-3d-container mb-6">
+<button class="switch-3d-button flex items-center justify-center group">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-tertiary group-active:text-red-500 transition-colors text-xl" style="font-variation-settings: 'FILL' 1;">power_settings_new</span>
+<span class="switch-label text-[10px] font-black uppercase tracking-[0.3em] text-on-surface mt-1">PRESS BUTTON TO RESET THE ALARM</span>
+</div>
+</button>
+</div>
+<div class="flex gap-8 mt-2">
+<div class="flex flex-col items-center">
+<div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mb-1"></div>
+<span class="text-[8px] uppercase font-bold text-slate-500">Active</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-1.5 h-1.5 rounded-full bg-slate-800 mb-1"></div>
+<span class="text-[8px] uppercase font-bold text-slate-500">Override</span>
+</div>
+</div>
+</div><div class="md:col-span-8 glass rounded-xl p-6">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-headline font-bold uppercase tracking-widest text-sm">Event Stream</h4>
+<span class="text-[10px] text-slate-500 font-bold uppercase">Real-time</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between py-2 border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="text-sm font-medium">Smoke detector triggered - Kitchen</span>
+</div>
+<span class="text-xs text-slate-500 font-mono">14:23:44</span>
+</div>
+<div class="flex items-center justify-between py-2 border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-sm font-medium">System Armed - Away Mode</span>
+</div>
+<span class="text-xs text-slate-500 font-mono">12:10:02</span>
+</div>
+<div class="flex items-center justify-between py-2">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-sm font-medium">Biometric scan successful - John Doe</span>
+</div>
+<span class="text-xs text-slate-500 font-mono">12:08:55</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Reset Button Section -->
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-[#0e0e0f]/80 backdrop-blur-xl shadow-[0_-4px_30px_rgba(0,0,0,0.5)]">
+<div class="flex flex-col items-center justify-center text-primary drop-shadow-[0_0_8px_rgba(57,255,20,0.6)] cursor-pointer">
+<span class="material-symbols-outlined mb-1" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Sanctuary</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-600 hover:text-primary/70 transition-all cursor-pointer">
+<span class="material-symbols-outlined mb-1" data-icon="sensors">sensors</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Sensors</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-600 hover:text-primary/70 transition-all cursor-pointer">
+<span class="material-symbols-outlined mb-1" data-icon="history">history</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Activity</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-600 hover:text-primary/70 transition-all cursor-pointer">
+<span class="material-symbols-outlined mb-1" data-icon="settings_alt">app_settings_alt</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Settings</span>
+</div>
+</nav>
+<!-- Visual Artifacts -->
+<div class="fixed top-0 right-0 w-1/2 h-screen pointer-events-none -z-10 bg-gradient-to-l from-primary/5 to-transparent"></div>
+<div class="fixed bottom-0 left-0 w-1/2 h-screen pointer-events-none -z-10 bg-gradient-to-r from-tertiary/5 to-transparent"></div>
+</body></html>

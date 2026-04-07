@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Security Dashboard - Live IoT Monitor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .status-badge.online {
+      background: #10b981;
+      color: white;
+    }
+
+    .status-badge.offline {
+      background: #ef4444;
+      color: white;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      padding: 25px;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .card-label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .card-status {
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Safe State */
+    .card.safe {
+      background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+      color: #a7f3d0;
+      border-left: 5px solid #10b981;
+    }
+
+    /* Alert State */
+    .card.alert {
+      background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+      color: #fca5a5;
+      border-left: 5px solid #ef4444;
+      animation: pulse-alert 1s infinite;
+    }
+
+    /* Warning State */
+    .card.warning {
+      background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+      color: #fcd34d;
+      border-left: 5px solid #f59e0b;
+    }
+
+    /* Offline State */
+    .card.offline {
+      background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+      color: #d1d5db;
+      border-left: 5px solid #9ca3af;
+    }
+
+    @keyframes pulse-alert {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    .controls {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 0 10px;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .log-container {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+      border: 1px solid #334155;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #93c5fd;
+    }
+
+    .log-entry {
+      padding: 8px;
+      margin: 5px 0;
+      border-left: 3px solid #3b82f6;
+      font-size: 13px;
+      color: #cbd5e1;
+      font-family: 'Courier New', monospace;
+    }
+
+    .log-entry.success {
+      border-left-color: #10b981;
+      color: #a7f3d0;
+    }
+
+    .log-entry.error {
+      border-left-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .update-interval {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .info-box {
+      background: #1e3a8a;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #bfdbfe;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>🔐 Smart Security System</h1>
+    <p>Live IoT Sensor Monitoring Dashboard</p>
+    <div class="status-badge online" id="connectionStatus">🟢 Connecting...</div>
+  </header>
+
+  <div class="info-box">
+    ⚡ <strong>Update Frequency:</strong> Every 2 seconds
+    <br>
+    📍 <strong>API:</strong> Blynk Cloud - getAll endpoint
+    <br>
+    🔌 <strong>Sensors:</strong> V0 (PIR) | V1 (Flame) | V2 (Door)
+  </div>
+
+  <div class="dashboard">
+    <div id="pir" class="card offline">
+      <div class="card-icon">🚨</div>
+      <div class="card-label">PIR Motion Sensor</div>
+      <div class="card-status">Loading...</div>
+    </div>
+
+    <div id="flame" class="card offline">
+      <div class="card-icon">🔥</div>
+      <div class="card-label">Flame Sensor</div>
+      <div class="card-status">Loading...</div>
+    </div>
+
+    <div id="door" class="card offline">
+      <div class="card-icon">🚪</div>
+      <div class="card-label">Door Sensor</div>
+      <div class="card-status">Loading...</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="manualRefresh()">🔄 Refresh Now</button>
+    <button onclick="clearLogs()">🗑️ Clear Log</button>
+    <button onclick="resetSensors()" title="Set all sensor values to 0">🔁 Reset System</button>
+  </div>
+
+  <div class="update-interval">
+    Last update: <span id="lastUpdate">Never</span> | Updates remaining: <span id="countdown">--</span>s
+  </div>
+
+  <div class="log-container">
+    <div class="log-title">📊 Activity Log</div>
+    <div id="logContainer"></div>
+  </div>
+
+</div>
+
+<script>
+
+// ⚠️ REPLACE WITH YOUR NEW TOKEN (from Blynk Device Info)
+const TOKEN = "2ffoYbFrhgy0tLaotK3rnJGgqIfvfhl5";
+const API_URL = "https://blynk.cloud/external/api/getAll?token=" + TOKEN;
+const UPDATE_INTERVAL = 2000; // 2 seconds
+
+let lastUpdateTime = null;
+let updateCount = 0;
+let countdownValue = 0;
+
+// API Proxy (if CORS blocked)
+// Uncomment the line below if you get CORS errors
+// const API_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://blynk.cloud/external/api/getAll?token=" + TOKEN);
+
+function addLog(message, isError = false) {
+  const logContainer = document.getElementById("logContainer");
+  const timestamp = new Date().toLocaleTimeString();
+  const entry = document.createElement("div");
+  entry.className = "log-entry" + (isError ? " error" : " success");
+  entry.innerHTML = `[${timestamp}] ${message}`;
+  logContainer.insertBefore(entry, logContainer.firstChild);
+
+  // Keep only last 50 logs
+  while (logContainer.children.length > 50) {
+    logContainer.removeChild(logContainer.lastChild);
+  }
+}
+
+function updateSensors() {
+  fetch(API_URL)
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      updateCount++;
+      lastUpdateTime = new Date();
+      document.getElementById("lastUpdate").innerText = lastUpdateTime.toLocaleTimeString();
+      document.getElementById("connectionStatus").innerHTML = "🟢 Online";
+      document.getElementById("connectionStatus").className = "status-badge online";
+
+      const v0 = Number(data.v0);
+      const v1 = Number(data.v1);
+      const v2 = Number(data.v2);
+
+      // PIR Sensor (V0)
+      const pirCard = document.getElementById("pir");
+      if (v0 === 1) {
+        pirCard.innerHTML = '<div class="card-icon">🔴</div><div class="card-label">PIR Motion Sensor</div><div class="card-status">MOTION DETECTED</div>';
+        pirCard.className = "card alert";
+        addLog("⚠️ PIR: Motion detected (V0 = 1)");
+      } else {
+        pirCard.innerHTML = '<div class="card-icon">🟢</div><div class="card-label">PIR Motion Sensor</div><div class="card-status">No Motion</div>';
+        pirCard.className = "card safe";
+      }
+
+      // Flame Sensor (V1)
+      const flameCard = document.getElementById("flame");
+      if (v1 === 1) {
+        flameCard.innerHTML = '<div class="card-icon">🔴</div><div class="card-label">Flame Sensor</div><div class="card-status">FLAME DETECTED</div>';
+        flameCard.className = "card alert";
+        addLog("🚨 FLAME: Flame detected (V1 = 1)");
+      } else {
+        flameCard.innerHTML = '<div class="card-icon">🟢</div><div class="card-label">Flame Sensor</div><div class="card-status">Safe</div>';
+        flameCard.className = "card safe";
+      }
+
+      // Door Sensor (V2)
+      const doorCard = document.getElementById("door");
+      if (v2 === 1) {
+        doorCard.innerHTML = '<div class="card-icon">🟠</div><div class="card-label">Door Sensor</div><div class="card-status">DOOR OPEN</div>';
+        doorCard.className = "card warning";
+        addLog("ℹ️ DOOR: Door opened (V2 = 1)");
+      } else {
+        doorCard.innerHTML = '<div class="card-icon">🟢</div><div class="card-label">Door Sensor</div><div class="card-status">Closed</div>';
+        doorCard.className = "card safe";
+      }
+
+    })
+    .catch(error => {
+      document.getElementById("connectionStatus").innerHTML = "🔴 Offline";
+      document.getElementById("connectionStatus").className = "status-badge offline";
+
+      document.getElementById("pir").innerHTML = '<div class="card-icon">❓</div><div class="card-label">PIR Motion Sensor</div><div class="card-status">Device Offline</div>';
+      document.getElementById("pir").className = "card offline";
+
+      document.getElementById("flame").innerHTML = '<div class="card-icon">❓</div><div class="card-label">Flame Sensor</div><div class="card-status">Device Offline</div>';
+      document.getElementById("flame").className = "card offline";
+
+      document.getElementById("door").innerHTML = '<div class="card-icon">❓</div><div class="card-label">Door Sensor</div><div class="card-status">Device Offline</div>';
+      document.getElementById("door").className = "card offline";
+
+      addLog("❌ Error: " + error.message, true);
+    });
+}
+
+function manualRefresh() {
+  addLog("🔄 Manual refresh triggered");
+  updateSensors();
+  countdownValue = UPDATE_INTERVAL / 1000;
+}
+
+// send reset command to Blynk to clear sensor pins
+function resetSensors() {
+  const resetUrl = `https://blynk.cloud/external/api/update?token=${TOKEN}&v0=0&v1=0&v2=0`;
+  addLog("🧹 Reset command sent to API");
+  fetch(resetUrl)
+    .then(resp => {
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      addLog("✅ Sensors reset to 0");
+      // refresh display after reset
+      updateSensors();
+    })
+    .catch(err => {
+      addLog("❌ Reset failed: " + err.message, true);
+    });
+}
+
+function clearLogs() {
+  document.getElementById("logContainer").innerHTML = "";
+  addLog("📝 Log cleared");
+}
+
+function updateCountdown() {
+  countdownValue--;
+  document.getElementById("countdown").innerText = Math.max(0, countdownValue);
+}
+
+// Initial update
+updateSensors();
+
+// Auto update every 2 seconds
+setInterval(updateSensors, UPDATE_INTERVAL);
+
+// Update countdown
+setInterval(updateCountdown, 1000);
+countdownValue = UPDATE_INTERVAL / 1000;
+
+// Log initial message
+addLog("✅ Dashboard initialized - waiting for sensor data...");
+
+</script>
+
+</body>
+</html>
