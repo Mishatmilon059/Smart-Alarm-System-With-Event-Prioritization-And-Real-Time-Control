@@ -81,4 +81,4 @@ Set up your Blynk console with the following virtual datastreams corresponding t
 - `V3`: Remote Reset Button (Integer 0/1)
 
 ---
-*Developed for the digital logic design / electronic engineering lab course.*
+*Developed for the digital logic design / Digital electronics lab course.*
